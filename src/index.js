@@ -12,7 +12,7 @@ class App extends Component{
       menu: ["", "", "", "", "", "", ""],
       elemIndex: null
     };
-    this.setActive = this.setActive.bind(this);//Func that display time w/o date.
+    this.setActive = this.setActive.bind(this);
     console.clear();
   }
 
