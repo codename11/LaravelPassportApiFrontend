@@ -36,15 +36,16 @@ class App extends Component{
       
     }
 
-    let allActive1 = document.querySelectorAll(".nav-link");
-    let len2 = allActive1.length;
+    let allTabs = document.querySelectorAll(".nav-link");
+    let len2 = allTabs.length;
     for(let i=0;i<len2;i++){
 
-      if(allActive1[i]===elem){
+      if(allTabs[i]===elem){
 
         this.setState({
           elemIndex: i
         });
+        
       }
       
     }
