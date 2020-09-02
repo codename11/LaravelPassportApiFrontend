@@ -3,17 +3,289 @@ import ReactDOM from 'react-dom';
 import "./index.css";
 import 'bootstrap/dist/css/bootstrap.css';
 import * as serviceWorker from './serviceWorker';
+import Login from "./components/login";
+import Register from "./components/register";
+import CreatePost from "./components/createPost";
+import ShowPost from "./components/showPost";
+import ListPosts from "./components/listPosts";
+import UpdatePost from "./components/updatePost";
+import DeletePost from "./components/deletePost";
 
 class App extends Component{
 
   constructor() {
     super();
     this.state = {
-      menu: ["", "", "", "", "", "", ""],
-      elemIndex: null
+      menu: ["register", "login", "create", "show", "update", "delete", "list"],
+      elemIndex: 0,
+      access_token: null,
+      posts: null,
+      post: null,
+      postUpdated: null,
+      postDeleted: null,
     };
     this.setActive = this.setActive.bind(this);
+    this.onChange = this.onChange.bind(this);
+    this.register = this.register.bind(this);
+    this.login = this.login.bind(this);
+    this.createPost = this.createPost.bind(this);
+    this.listPosts = this.listPosts.bind(this);
+    this.updatePost = this.updatePost.bind(this);
+    this.deletePost = this.deletePost.bind(this);
     console.clear();
+
+  }
+
+  async deletePost(e){
+
+    e.preventDefault();
+
+    let forma = e.target;
+    let formElements = {};
+    let postId = forma.elements[0].value;
+
+    console.log(formElements);
+
+    let url = "http://LaravelPassportApi.test/api/post/"+postId;
+
+    await fetch(url, {
+      method: 'DELETE', // *GET, POST, PUT, DELETE, etc.
+      crossDomain : true,
+			headers: {
+        'Content-Type': 'application/json',
+        "Accept": 'application/json',
+        "Authorization": "Bearer " + this.state.access_token
+			},
+			body: JSON.stringify(formElements) // body data type must match "Content-Type" header
+		 })
+		.then((response) => {
+
+      return response.json();
+
+    })// parses JSON response into native JavaScript objects
+		.then((data) => {
+
+      console.log(data);
+      this.listPosts();
+      
+    })
+		.catch((error) => {
+			  console.error('Error:', error);
+		});
+
+  }
+
+  async updatePost(e){
+
+    e.preventDefault();
+
+    let forma = e.target;
+    let formElements = {};
+    let postId = forma.elements[0].value;
+    formElements.title = forma.elements[1].value;
+    formElements.body = forma.elements[2].value;
+
+    console.log(formElements);
+
+    let url = "http://LaravelPassportApi.test/api/post/"+postId;
+
+    await fetch(url, {
+      method: 'PATCH', // *GET, POST, PUT, DELETE, etc.
+      crossDomain : true,
+			headers: {
+        'Content-Type': 'application/json',
+        "Accept": 'application/json',
+        "Authorization": "Bearer " + this.state.access_token
+			},
+			body: JSON.stringify(formElements) // body data type must match "Content-Type" header
+		 })
+		.then((response) => {
+
+      return response.json();
+
+    })// parses JSON response into native JavaScript objects
+		.then((data) => {
+
+      console.log(data);
+      this.listPosts();
+      
+    })
+		.catch((error) => {
+			  console.error('Error:', error);
+		});
+
+  }
+
+  onChange(e){
+
+    console.log(e.target.value);
+
+    let postId = e.target.value;
+    let url = "http://LaravelPassportApi.test/api/post/" + postId;
+
+    fetch(url, {
+          headers: {
+            'Accept': 'application/json',
+            "Authorization": "Bearer " + this.state.access_token
+          }
+        }
+      )
+			.then((response) => response.json())
+			.then((data) => {
+
+        this.setState({
+          post: data.post
+        });
+
+      })
+			.catch((error) => {
+			  console.error('Error:', error);
+		});
+
+  }
+
+  async listPosts(){
+
+    //console.log(formElements);
+
+    let url = "http://LaravelPassportApi.test/api/post";
+
+    await fetch(url, {
+          headers: {
+            'Accept': 'application/json',
+            "Authorization": "Bearer " + this.state.access_token
+          }
+        }
+      )
+			.then((response) => response.json())
+			.then((data) => {
+
+        //console.log(data);
+        this.setState({
+          posts: data.posts
+        });
+
+      })
+			.catch((error) => {
+			  console.error('Error:', error);
+		});
+
+  }
+
+  async createPost(e){
+
+    e.preventDefault();
+
+    let forma = e.target;
+    let formElements = {};
+    formElements.title = forma.elements[0].value;
+    formElements.body = forma.elements[1].value;
+
+    console.log(formElements);
+
+    let url = "http://LaravelPassportApi.test/api/post";
+
+    await fetch(url, {
+      method: 'POST', // *GET, POST, PUT, DELETE, etc.
+      crossDomain : true,
+			headers: {
+        'Content-Type': 'application/json',
+        "Accept": 'application/json',
+        "Authorization": "Bearer " + this.state.access_token
+			},
+			body: JSON.stringify(formElements) // body data type must match "Content-Type" header
+		 })
+		.then((response) => {
+
+      return response.json();
+
+    })// parses JSON response into native JavaScript objects
+		.then((data) => {
+
+      console.log(data);
+      this.listPosts();
+
+    })
+		.catch((error) => {
+			  console.error('Error:', error);
+		});
+
+  }
+
+  async login(e){
+
+    e.preventDefault();
+
+    let forma = e.target;
+    let formElements = {};
+    formElements.email = forma.elements[0].value;
+    formElements.password = forma.elements[1].value;
+
+    //console.log(formElements);
+
+    let url = "http://LaravelPassportApi.test/api/login";
+
+    await fetch(url, {
+      method: 'POST', // *GET, POST, PUT, DELETE, etc.
+      crossDomain : true,
+			headers: {
+        'Content-Type': 'application/json',
+			},
+			body: JSON.stringify(formElements) // body data type must match "Content-Type" header
+		 })
+		.then((response) => {
+
+      return response.json();
+
+    })// parses JSON response into native JavaScript objects
+		.then((data) => {
+
+      this.setState(data);
+      console.log(data);
+      this.listPosts();
+
+    })
+		.catch((error) => {
+			  console.error('Error:', error);
+		});
+
+  }
+
+  async register(e){
+
+    e.preventDefault();
+
+    let forma = e.target;
+    let formElements = {};
+    formElements.name = forma.elements[0].value;
+    formElements.email = forma.elements[1].value;
+    formElements.password = forma.elements[2].value;
+    formElements.password_confirmation = forma.elements[3].value;
+
+    let url = "http://LaravelPassportApi.test/api/register";
+
+    await fetch(url, {
+      method: 'POST', // *GET, POST, PUT, DELETE, etc.
+      crossDomain : true,
+			headers: {
+        'Content-Type': 'application/json',
+			},
+			body: JSON.stringify(formElements) // body data type must match "Content-Type" header
+		 })
+		.then((response) => {
+
+      return response.json();
+
+    })// parses JSON response into native JavaScript objects
+		.then((data) => {
+
+      console.log(data);
+      
+    })
+		.catch((error) => {
+			  console.error('Error:', error);
+		});
+
   }
 
   setActive(e){
@@ -53,31 +325,93 @@ class App extends Component{
     this.setState(obj1);
 
   }
-
+  
   render() {
     //console.log();
+    console.log(this.state);
     let active =  null;
+    let elemIndex = this.state.elemIndex;
+    
+    let menu = this.state.menu.filter((item, i) => {
 
-    let lis = this.state.menu.map((item, i) => {
+      if(this.state.access_token===null && item==="register"){
+        
+        return item;
 
-      active = (this.state.elemIndex === i || (this.state.elemIndex===null && i===0) ? " active" : "");
+      }
 
-      return <li className="nav-item" key={i}>
+      if(this.state.access_token===null && item==="login"){
+        
+        return item;
+
+      }
+
+      if(this.state.access_token!==null && item==="create"){
+        
+        return item;
+
+      }
+
+      if(this.state.access_token!==null && item==="show"){
+        
+        return item;
+
+      }
+
+      if(this.state.access_token!==null && item==="update"){
+        
+        return item;
+
+      }
+
+      if(this.state.access_token!==null && item==="delete"){
+        
+        return item;
+
+      }
+
+      if(this.state.access_token!==null && item==="list"){
+        
+        return item;
+
+      }
+   
+      
+    });
+    
+    let lis = menu.map((item, i) => {
+
+      active = (elemIndex === i || (elemIndex===0 && i===0) ? " active" : "");
+      
+      return <li className="nav-item" key={i} id={i}>
         <a className={"nav-link" + active} data-toggle="tab" href={"menu"+(i+1)} onClick={this.setActive}>
-          {"Menu"+(i+1)}
+          {item}
         </a>
-      </li>
+      </li>;
 
     });
 
-    let tabContents = this.state.menu.map((item, i) => {
-
-      active = (this.state.elemIndex === i || (this.state.elemIndex===null && i===0) ? " active" : "");
+    let tabContents = menu.map((item, i) => {
+      
+      active = (elemIndex === i || (elemIndex===0 && i===0) ? " active" : "");
       
       return <div id={"menu"+(i+1)} key={i} className={"container tab-pane" + active}><br/>
-        <h3>{"Menu"+(i+1)}</h3>
-        <p>{"Menu"+(i+1)}Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</p>
-      </div>
+        
+        {item==="register" ? <Register register={this.register}/> : null}
+
+        {item==="login" ? <Login login={this.login}/> : null}
+
+        {this.state.access_token!==null && item==="create" ? <CreatePost createPost={this.createPost}/> : null}
+
+        {this.state.access_token!==null && item==="show" && this.state.posts!==null ? <ShowPost onChange={this.onChange} posts={this.state.posts} post={this.state.post}/> : null}
+
+        {this.state.access_token!==null && item==="list" && this.state.posts!==null ? <ListPosts posts={this.state.posts}/> : null}
+
+        {this.state.access_token!==null && item==="update" && this.state.posts!==null ? <UpdatePost onChange={this.onChange} updatePost={this.updatePost} posts={this.state.posts} post={this.state.post}/> : null}
+
+        {this.state.access_token!==null && item==="delete" && this.state.posts!==null ? <DeletePost onChange={this.onChange} updatePost={this.deletePost} posts={this.state.posts} post={this.state.post}/> : null}
+
+      </div>;
 
     });
 
