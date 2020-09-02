@@ -14,12 +14,12 @@ class Register extends Component {
 
                 <div className="form-group">
                     <label htmlFor="email">Email:</label>
-                    <input type="email" className="form-control" name="email" id="email" required/>
+                    <input type="email" className="form-control" name="email" id="email2" required/>
                 </div>
 
                 <div className="form-group">
                     <label htmlFor="password">Password:</label>
-                    <input type="password" className="form-control" name="password" id="password" required/>
+                    <input type="password" className="form-control" name="password" id="password2" required/>
                 </div>
 
                 <div className="form-group">

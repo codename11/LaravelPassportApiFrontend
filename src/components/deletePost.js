@@ -10,9 +10,9 @@ class DeletePost extends Component {
 
         });
 
-        let deletePost = this.props.post ? <form onSubmit={this.props.updatePost}>
+        let deletePost = this.props.postDelete ? <form onSubmit={this.props.deletePost}>
 
-            <input type="hidden" name="postId" value={this.props.post.id}/>
+            <input type="hidden" name="postId" value={this.props.postDelete.id}/>
 
             <input className="btn btn-outline-primary" type="submit" value="Submit" />
 
@@ -21,7 +21,7 @@ class DeletePost extends Component {
         return (
             <div className="container">
 
-                <select onChange={this.props.onChange} name="posts" className="custom-select mb-3">
+                <select id={"seldelete"} onChange={this.props.onChange} name="posts" className="custom-select mb-3">
                     {options}
                 </select>
 

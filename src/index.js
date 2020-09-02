@@ -17,10 +17,13 @@ class App extends Component{
     super();
     this.state = {
       menu: ["register", "login", "create", "show", "update", "delete", "list"],
+      filteredMenu: [],
       elemIndex: 0,
       access_token: null,
       posts: null,
-      post: null,
+      showPost: null,
+      updatePost: null,
+      deletePost: null,
       postUpdated: null,
       postDeleted: null,
     };
@@ -32,7 +35,26 @@ class App extends Component{
     this.listPosts = this.listPosts.bind(this);
     this.updatePost = this.updatePost.bind(this);
     this.deletePost = this.deletePost.bind(this);
+    this.filterize = this.filterize.bind(this);
+    this.onClick = this.onClick.bind(this);
     console.clear();
+
+  }
+
+  async onClick(e){
+
+    let liId = e.target.parentElement.id
+    let loc1 = liId.indexOf("li");
+    let tab = liId.substr(0,loc1);
+
+    let select = document.getElementById("sel"+tab);
+    
+    if(select){
+      
+      let postId = select.value;
+      let selId = select.id;
+      this.onChange(postId,selId);
+    }
 
   }
 
@@ -46,7 +68,7 @@ class App extends Component{
 
     console.log(formElements);
 
-    let url = "http://LaravelPassportApi.test/api/post/"+postId;
+    let url = "http://LaravelPassportApi.test/api/post/" + postId;
 
     await fetch(url, {
       method: 'DELETE', // *GET, POST, PUT, DELETE, etc.
@@ -55,8 +77,7 @@ class App extends Component{
         'Content-Type': 'application/json',
         "Accept": 'application/json',
         "Authorization": "Bearer " + this.state.access_token
-			},
-			body: JSON.stringify(formElements) // body data type must match "Content-Type" header
+			}
 		 })
 		.then((response) => {
 
@@ -84,8 +105,6 @@ class App extends Component{
     let postId = forma.elements[0].value;
     formElements.title = forma.elements[1].value;
     formElements.body = forma.elements[2].value;
-
-    console.log(formElements);
 
     let url = "http://LaravelPassportApi.test/api/post/"+postId;
 
@@ -116,14 +135,24 @@ class App extends Component{
 
   }
 
-  onChange(e){
+  async onChange(par1, par2){
 
-    console.log(e.target.value);
+    let postId = null;
+    let selId = null;
+    if(par1.target){
+      postId = par1.target.value;
+      selId = par1.target.id;
+    }
+    else{
 
-    let postId = e.target.value;
+      postId = par1;
+      selId = par2;
+
+    }
+    
     let url = "http://LaravelPassportApi.test/api/post/" + postId;
 
-    fetch(url, {
+    await fetch(url, {
           headers: {
             'Accept': 'application/json',
             "Authorization": "Bearer " + this.state.access_token
@@ -133,9 +162,29 @@ class App extends Component{
 			.then((response) => response.json())
 			.then((data) => {
 
-        this.setState({
-          post: data.post
-        });
+        if(selId==="selshow"){
+
+          this.setState({
+            showPost: data.post
+          });
+
+        }
+
+        if(selId==="selupdate"){
+          
+          this.setState({
+            updatePost: data.post
+          });
+
+        }
+
+        if(selId==="seldelete"){
+
+          this.setState({
+            deletePost: data.post
+          });
+
+        }
 
       })
 			.catch((error) => {
@@ -241,8 +290,9 @@ class App extends Component{
 		.then((data) => {
 
       this.setState(data);
-      console.log(data);
+      //console.log(data);
       this.listPosts();
+      this.filterize();
 
     })
 		.catch((error) => {
@@ -325,65 +375,88 @@ class App extends Component{
     this.setState(obj1);
 
   }
+
+  filterize(){
+    
+    let menu = this.state.menu.filter((item, i) => {
+      
+      let access_token = this.state.access_token;
+      if(access_token===null && item==="register"){
+        
+        return item;
+
+      }
+
+      if(access_token===null && item==="login"){
+        
+        return item;
+
+      }
+
+      if(access_token!==null && item==="create"){
+        
+        return item;
+
+      }
+
+      if(access_token!==null && item==="show"){
+        
+        return item;
+
+      }
+
+      if(access_token!==null && item==="update"){
+        
+        return item;
+
+      }
+
+      if(access_token!==null && item==="delete"){
+        
+        return item;
+
+      }
+
+      if(access_token!==null && item==="list"){
+        
+        return item;
+
+      }
+      
+    });
+
+    this.setState({
+      filteredMenu: [...menu],
+      elemIndex: 0
+    });
+    
+  }
+
+  componentDidMount(){
+    this.filterize();
+  }
   
   render() {
     //console.log();
-    console.log(this.state);
-    let active =  null;
+    
     let elemIndex = this.state.elemIndex;
+    let active =  null;
     
-    let menu = this.state.menu.filter((item, i) => {
-
-      if(this.state.access_token===null && item==="register"){
-        
-        return item;
-
-      }
-
-      if(this.state.access_token===null && item==="login"){
-        
-        return item;
-
-      }
-
-      if(this.state.access_token!==null && item==="create"){
-        
-        return item;
-
-      }
-
-      if(this.state.access_token!==null && item==="show"){
-        
-        return item;
-
-      }
-
-      if(this.state.access_token!==null && item==="update"){
-        
-        return item;
-
-      }
-
-      if(this.state.access_token!==null && item==="delete"){
-        
-        return item;
-
-      }
-
-      if(this.state.access_token!==null && item==="list"){
-        
-        return item;
-
-      }
-   
+    let lis = this.state.filteredMenu ? this.state.filteredMenu.map((item, i) => {
       
-    });
-    
-    let lis = menu.map((item, i) => {
-
-      active = (elemIndex === i || (elemIndex===0 && i===0) ? " active" : "");
+      active = elemIndex===i || (i===0 && elemIndex===0) ? " active" : "";
       
-      return <li className="nav-item" key={i} id={i}>
+      return <li className="nav-item" key={i} id={item+"li"} onClick={this.onClick}>
+        <a className={"nav-link" + active} data-toggle="tab" href={"menu"+(i+1)} onClick={this.setActive}>
+          {item}
+        </a>
+      </li>;
+
+    }) : this.state.menu.map((item, i) => {
+      
+      active = elemIndex===i || (i===0 && elemIndex===0) ? " active" : "";
+      
+      return <li className="nav-item" key={i} id={item+"li"}>
         <a className={"nav-link" + active} data-toggle="tab" href={"menu"+(i+1)} onClick={this.setActive}>
           {item}
         </a>
@@ -391,11 +464,11 @@ class App extends Component{
 
     });
 
-    let tabContents = menu.map((item, i) => {
+    let tabContents = this.state.filteredMenu ? this.state.filteredMenu.map((item, i) => {
       
-      active = (elemIndex === i || (elemIndex===0 && i===0) ? " active" : "");
-      
-      return <div id={"menu"+(i+1)} key={i} className={"container tab-pane" + active}><br/>
+      active = elemIndex===i || (i===0 && elemIndex===0) ? " active" : "";
+
+      return <div id={item+"tab"} key={i} className={"container tab-pane" + active}><br/>
         
         {item==="register" ? <Register register={this.register}/> : null}
 
@@ -403,13 +476,35 @@ class App extends Component{
 
         {this.state.access_token!==null && item==="create" ? <CreatePost createPost={this.createPost}/> : null}
 
-        {this.state.access_token!==null && item==="show" && this.state.posts!==null ? <ShowPost onChange={this.onChange} posts={this.state.posts} post={this.state.post}/> : null}
+        {this.state.access_token!==null && item==="show" && this.state.posts!==null ? <ShowPost onChange={this.onChange} posts={this.state.posts} postShow={this.state.showPost}/> : null}
 
         {this.state.access_token!==null && item==="list" && this.state.posts!==null ? <ListPosts posts={this.state.posts}/> : null}
 
-        {this.state.access_token!==null && item==="update" && this.state.posts!==null ? <UpdatePost onChange={this.onChange} updatePost={this.updatePost} posts={this.state.posts} post={this.state.post}/> : null}
+        {this.state.access_token!==null && item==="update" && this.state.posts!==null ? <UpdatePost onChange={this.onChange} updatePost={this.updatePost} posts={this.state.posts} postUpdate={this.state.updatePost}/> : null}
 
-        {this.state.access_token!==null && item==="delete" && this.state.posts!==null ? <DeletePost onChange={this.onChange} updatePost={this.deletePost} posts={this.state.posts} post={this.state.post}/> : null}
+        {this.state.access_token!==null && item==="delete" && this.state.posts!==null ? <DeletePost onChange={this.onChange} deletePost={this.deletePost} posts={this.state.posts} postDelete={this.state.deletePost}/> : null}
+
+      </div>;
+
+    }) : this.state.menu.map((item, i) => {
+      
+      active = elemIndex===i || (i===0 && elemIndex===0) ? " active" : "";
+
+      return <div id={item+"tab"} key={i} className={"container tab-pane" + active}><br/>
+        
+        {item==="register" ? <Register register={this.register}/> : null}
+
+        {item==="login" ? <Login login={this.login}/> : null}
+
+        {this.state.access_token!==null && item==="create" ? <CreatePost createPost={this.createPost}/> : null}
+
+        {this.state.access_token!==null && item==="show" && this.state.posts!==null ? <ShowPost onChange={this.onChange} posts={this.state.posts} postShow={this.state.showPost}/> : null}
+
+        {this.state.access_token!==null && item==="list" && this.state.posts!==null ? <ListPosts posts={this.state.posts}/> : null}
+
+        {this.state.access_token!==null && item==="update" && this.state.posts!==null ? <UpdatePost onChange={this.onChange} updatePost={this.updatePost} posts={this.state.posts} postUpdate={this.state.updatePost}/> : null}
+
+        {this.state.access_token!==null && item==="delete" && this.state.posts!==null ? <DeletePost onChange={this.onChange} deletePost={this.deletePost} posts={this.state.posts} postDelete={this.state.deletePost}/> : null}
 
       </div>;
 

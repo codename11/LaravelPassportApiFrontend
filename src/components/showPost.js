@@ -10,16 +10,16 @@ class ShowPost extends Component {
 
         });
 
-        let post = this.props.post ? <div className="card">
-            <div className="card-header">{this.props.post.title}</div>
-            <div className="card-body">{this.props.post.body}</div>
-            <div className="card-footer">{this.props.post.id}</div>
+        let post = this.props.postShow ? <div className="card">
+            <div className="card-header">{this.props.postShow.title}</div>
+            <div className="card-body">{this.props.postShow.body}</div>
+            <div className="card-footer">{this.props.postShow.id}</div>
         </div> : null;
-
+        
         return (
             <div className="container">
 
-                <select onChange={this.props.onChange} name="posts" className="custom-select mb-3">
+                <select id={"selshow"} onChange={this.props.onChange} name="posts" className="custom-select mb-3">
                     {options}
                 </select>
 
